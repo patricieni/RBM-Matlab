@@ -90,25 +90,47 @@ pause;
 %  ----------------- test the machine ----------------------
 
 v1 = [1,0,1,0;0.5,0.5,0.5,0.5;0.5,0.5,0.5,0.5;0.5,0.5,0.5,0.5;];
+v2 = [0.5,0.5,0.5,0.5;0.5,1,1,0.5;0.5,1,1,0.5;0.5,0.5,0.5,0.5;];
+test_v2 = [1,1,1,1;1,1,1,1;1,1,1,1;1,1,1,1];
 test_v1 = [1,0,1,0;1,0,1,0;1,0,1,0;1,0,1,0];
-test_v1 = reshape(test_v1,[1,16]);
 v1 = reshape(v1,[1,16]);
-all_v = zeros(10000,1);
+v2 = reshape(v2,[1,16]);
+test_v1 = reshape(test_v1,[1,16]);
+test_v2 = reshape(test_v2,[1,16]);
+
+all_v1 = zeros(10000,1);
 err_v1 = 0;
 
-    for i = 1:10000
-     v = gibbs(v1,h_bias,v_bias,W,4);
-    
-        all_v(i) = bin2dec(num2str(v));
+all_v2 = zeros(10000,1);
+err_v2 = 0;
 
-        e = sum((v-test_v1).^2);
-        if e == 0 && i > 1000
-            err_v1 = err_v1 + 1;
-        end
+% Test the first example
+for i = 1:10000
+    v = gibbs(v1,h_bias,v_bias,W,4);
+    
+    all_v1(i) = bin2dec(num2str(v));
+    e = sum((v-test_v1).^2);
+    if e == 0 && i > 1000
+        err_v1 = err_v1 + 1;
     end
+end
+
+% Test the second example
+for i = 1:10000
+    v = gibbs(v2,h_bias,v_bias,W,4);
+    
+    all_v2(i) = bin2dec(num2str(v));
+    e = sum((v-test_v2).^2);
+    if e == 0 && i > 1000
+        err_v2 = err_v2 + 1;
+    end
+end
+
+
 total = err_v1/9000.0;
-fprintf('%f \n',total);    
-hist(all_v,10000);
+total2 = err_v2/9000.0;
+fprintf('%f \n',total2);    
+hist(all_v2,10000);
 
 %  ---------------------------------------------------------
 % reshape(v,[4,4]);
